@@ -8,7 +8,7 @@ import (
 )
 
 func Test_SolvePartOne(t *testing.T) {
-	readFile, err := os.Open("./test-input")
+	readFile, err := os.Open("../test-input")
 
 	if err != nil {
 		fmt.Println(err)
@@ -34,7 +34,7 @@ func Test_SolvePartOne(t *testing.T) {
 }
 
 func Test_SolvePartTwo(t *testing.T) {
-	readFile, err := os.Open("./test-input")
+	readFile, err := os.Open("../test-input")
 
 	if err != nil {
 		fmt.Println(err)

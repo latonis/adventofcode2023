@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	readFile, err := os.Open("./input")
+	readFile, err := os.Open("../input")
 
 	if err != nil {
 		fmt.Println(err)

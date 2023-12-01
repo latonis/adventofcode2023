@@ -35,7 +35,7 @@ func ParseString(str string) (LetterInt, bool) {
 }
 
 func main() {
-	readFile, err := os.Open("./input")
+	readFile, err := os.Open("../input")
 
 	if err != nil {
 		fmt.Println(err)
@@ -82,7 +82,7 @@ func findNum(line string) string {
 		for j := range line[i:] {
 			val, ok := LetterIntMap[line[i:len(line)-j]]
 			if ok {
-				return strings.Replace(line, line[i:len(line)-j], fmt.Sprint(int(val)) + string(line[len(line)-j-1]), int(-1))
+				return strings.Replace(line, line[i:len(line)-j], fmt.Sprint(int(val))+string(line[len(line)-j-1]), int(-1))
 			}
 		}
 	}
