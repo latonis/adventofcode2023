@@ -70,7 +70,6 @@ func getNum(line string, idx int) int {
 	}
 
 	tempVal, _ := strconv.Atoi(numStr)
-	// println(tempVal)
 	return tempVal
 
 }
@@ -87,8 +86,6 @@ func makeGrid(grid [][]string, lines []string) {
 }
 func solvePartOne(input []string) int {
 	total := 0
-	// grid := make([][]string, len(input))
-	// makeGrid(grid, input)
 	for line_idx, line := range input {
 		sameNum := false
 		for char_idx, char := range line {
@@ -111,8 +108,6 @@ func solvePartOne(input []string) int {
 			}
 		}
 	}
-	// fmt.Println()
-
 	println(total)
 	return total
 }
