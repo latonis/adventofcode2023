@@ -91,66 +91,17 @@ func solvePartOne(input []string) int {
 	// makeGrid(grid, input)
 	for line_idx, line := range input {
 		sameNum := false
-		for char_idx := range line {
-			if unicode.IsDigit(rune(line[char_idx])) && !sameNum {
-				if line_idx > 0 && line_idx < len(input)-1 {
-					if isSymbol(input[line_idx-1][char_idx]) || isSymbol(input[line_idx+1][char_idx]) {
-						total += getNum(line, char_idx)
-						sameNum = true
-					} else if char_idx > 0 && char_idx < len(line)-1 {
-						if isSymbol(line[char_idx-1]) || isSymbol(line[char_idx+1]) || isSymbol(input[line_idx-1][char_idx-1]) || isSymbol(input[line_idx+1][char_idx-1]) || isSymbol(input[line_idx-1][char_idx+1]) || isSymbol(input[line_idx+1][char_idx+1]) {
-							sameNum = true
-							total += getNum(line, char_idx)
-						}
-					} else if char_idx == 0 {
-						if isSymbol(line[char_idx+1]) || isSymbol(input[line_idx-1][char_idx+1]) || isSymbol(input[line_idx+1][char_idx+1]) {
-							sameNum = true
-							total += getNum(line, char_idx)
-						}
-					} else if char_idx == len(line)-1 {
-						if isSymbol(line[char_idx-1]) || isSymbol(input[line_idx-1][char_idx-1]) || isSymbol(input[line_idx+1][char_idx-1]) {
-							total += getNum(line, char_idx)
-							sameNum = true
-						}
-					}
-				} else if line_idx == 0 {
-					if isSymbol(input[line_idx+1][char_idx]) {
-						total += getNum(line, char_idx)
-						sameNum = true
-					} else if char_idx > 0 && char_idx < len(line)-1 {
-						if isSymbol(line[char_idx-1]) || isSymbol(line[char_idx+1]) || isSymbol(input[line_idx+1][char_idx-1]) || isSymbol(input[line_idx+1][char_idx+1]) {
-							total += getNum(line, char_idx)
-							sameNum = true
-						}
-					} else if char_idx == 0 {
-						if isSymbol(line[char_idx+1]) || isSymbol(input[line_idx+1][char_idx+1]) {
-							total += getNum(line, char_idx)
-							sameNum = true
-						}
-					} else if char_idx == len(line)-1 {
-						if isSymbol(line[char_idx-1]) || isSymbol(input[line_idx+1][char_idx-1]) {
-							total += getNum(line, char_idx)
-							sameNum = true
-						}
-					}
-				} else if line_idx == len(input)-1 {
-					if isSymbol(input[line_idx-1][char_idx]) {
-						total += getNum(line, char_idx)
-						sameNum = true
-					} else if char_idx > 0 && char_idx < len(line)-1 {
-						if isSymbol(line[char_idx-1]) || isSymbol(line[char_idx+1]) || isSymbol(input[line_idx-1][char_idx-1]) || isSymbol(input[line_idx-1][char_idx+1]) {
-							total += getNum(line, char_idx)
-							sameNum = true
-						}
-					} else if char_idx == 0 {
-						if isSymbol(line[char_idx+1]) || isSymbol(input[line_idx-1][char_idx+1]) {
-							total += getNum(line, char_idx)
-							sameNum = true
-						}
-					} else if char_idx == len(line)-1 {
-						if isSymbol(line[char_idx-1]) || isSymbol(input[line_idx-1][char_idx-1]) {
-							total += getNum(line, char_idx)
-							sameNum = true
+		for char_idx, char := range line {
+			char_indexes := []int{char_idx - 1, char_idx, char_idx + 1}
+			line_indexes := []int{line_idx - 1, line_idx, line_idx + 1}
+			if unicode.IsDigit(char) && !sameNum {
+				for _, l_idx := range line_indexes {
+					for _, c_idx := range char_indexes {
+						if l_idx >= 0 && c_idx >= 0 && l_idx < len(input) && c_idx < len(input[l_idx]) {
+							if isSymbol(input[l_idx][c_idx]) {
+								sameNum = true
+								total += getNum(line, char_idx)
+							}
 						}
 					}
 				}
@@ -158,10 +109,9 @@ func solvePartOne(input []string) int {
 			if line[char_idx] == '.' || isSymbol(line[char_idx]) {
 				sameNum = false
 			}
-			// fmt.Print(string(line[char_idx]))
 		}
-		// fmt.Println()
 	}
+	// fmt.Println()
 
 	println(total)
 	return total
