@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"unicode"
 )
@@ -178,14 +179,15 @@ func solvePartTwo(input []string) int {
 					for _, c_idx := range char_indexes {
 						if l_idx >= 0 && c_idx >= 0 && c_idx < len(input[l_idx]) && l_idx < len(input) {
 							if unicode.IsDigit(rune(input[l_idx][c_idx])) {
-								adjNums = append(adjNums, getNum(input[l_idx], c_idx))
-								if len(adjNums) == 2 {
-									// println(adjNums[0], " ", adjNums[1])
-									total += adjNums[0] * adjNums[1]
+								if !slices.Contains(adjNums, getNum(input[l_idx], c_idx)) {
+									adjNums = append(adjNums, getNum(input[l_idx], c_idx))
 								}
 							}
 						}
 					}
+				}
+				if len(adjNums) == 2 {
+					total += adjNums[0] * adjNums[1]
 				}
 			}
 		}
