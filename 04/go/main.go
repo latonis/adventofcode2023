@@ -27,7 +27,7 @@ func main() {
 	}
 	readFile.Close()
 
-	// solvePartOne(fileLines)
+	solvePartOne(fileLines)
 	solvePartTwo(fileLines)
 }
 
@@ -54,13 +54,9 @@ func solvePartOne(input []string) int {
 	for _, line := range input {
 		card_total := 0
 		game_setp := strings.Split(line, ": ")
-		// game_id := strings.Split(game_setp[0], " ")
 		nums_split := strings.Split(game_setp[1], " | ")
-		fmt.Println(nums_split)
 		winning_nums := parseNums(strings.Fields(nums_split[0]))
-
 		given_nums := parseNums(strings.Fields(nums_split[1]))
-
 		count_in := 0
 
 		for _, given_num := range given_nums {
@@ -76,7 +72,7 @@ func solvePartOne(input []string) int {
 		total += card_total
 	}
 	fmt.Println(total)
-	return 0
+	return total
 }
 
 type CardCount struct {
@@ -93,7 +89,6 @@ func solvePartTwo(input []string) int {
 		nums_split := strings.Split(game_setp[1], " | ")
 		winning_nums := parseNums(strings.Fields(nums_split[0]))
 		given_nums := parseNums(strings.Fields(nums_split[1]))
-
 		count_in := 0
 
 		for _, given_num := range given_nums {
@@ -113,5 +108,5 @@ func solvePartTwo(input []string) int {
 		total += resultMap[game_id].count
 	}
 	fmt.Println(total)
-	return 0
+	return total
 }
