@@ -26,7 +26,7 @@ func Test_SolvePartOne(t *testing.T) {
 	readFile.Close()
 
 	result := solvePartOne(fileLines)
-	expected := 0
+	expected := 35
 
 	if result != expected {
 		t.Errorf("Incorrect result! given: %d, expected: %d.", result, expected)
@@ -52,7 +52,7 @@ func Test_SolvePartTwo(t *testing.T) {
 	readFile.Close()
 
 	result := solvePartTwo(fileLines)
-	expected := 0
+	expected := 46
 
 	if result != expected {
 		t.Errorf("Incorrect result! given: %d, expected: %d.", result, expected)

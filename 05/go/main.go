@@ -204,7 +204,6 @@ func solvePartOne(input []string) int {
 
 func solvePartTwo(input []string) int {
 	seeds_parsed := parseNums(Split(input[0])[1:])
-	fmt.Println(seeds_parsed)
 	c1 := make(chan int, len(seeds_parsed)/2)
 	almanac := parseMap(input)
 

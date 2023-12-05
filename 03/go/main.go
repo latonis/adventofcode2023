@@ -139,5 +139,5 @@ func solvePartTwo(input []string) int {
 	}
 
 	println(total)
-	return 0
+	return total
 }
