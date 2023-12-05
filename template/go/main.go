@@ -4,7 +4,88 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
+
+// fmt.Println(Index(strs, "pear"))
+func Index(vs []string, t string) int {
+	for i, v := range vs {
+		if v == t {
+			return i
+		}
+	}
+	return -1
+}
+
+// fmt.Println(Include(strs, "grape"))
+func Include(vs []string, t string) bool {
+	return Index(vs, t) >= 0
+}
+
+//	fmt.Println(Any(strs, func(v string) bool {
+//	    return strings.HasPrefix(v, "p")
+//	}))
+func Any(vs []string, f func(string) bool) bool {
+	for _, v := range vs {
+		if f(v) {
+			return true
+		}
+	}
+	return false
+}
+
+//	fmt.Println(All(strs, func(v string) bool {
+//	    return strings.HasPrefix(v, "p")
+//	}))
+func All(vs []string, f func(string) bool) bool {
+	for _, v := range vs {
+		if !f(v) {
+			return false
+		}
+	}
+	return true
+}
+
+//	fmt.Println(Filter(strs, func(v string) bool {
+//	    return strings.Contains(v, "e")
+//	}))
+func Filter(vs []string, f func(string) bool) []string {
+	vsf := make([]string, 0)
+	for _, v := range vs {
+		if f(v) {
+			vsf = append(vsf, v)
+		}
+	}
+	return vsf
+}
+
+// fmt.Println(Map(strs, strings.ToUpper))
+func Map(vs []string, f func(string) string) []string {
+	vsm := make([]string, len(vs))
+	for i, v := range vs {
+		vsm[i] = f(v)
+	}
+	return vsm
+}
+
+func Split(s string) []string {
+	return strings.Fields(s)
+}
+
+func First(T []any) any {
+	if len(T) > 0 {
+		return T[0]
+	}
+	return nil
+}
+
+
+func Last(T []any) any {
+	if len(T) > 0 {
+		return T[len(T)-1]
+	}
+	return nil
+}
 
 func main() {
 	readFile, err := os.Open("../input")
