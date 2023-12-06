@@ -9,7 +9,7 @@ fn main() {
     let contents = fs::read_to_string(input_path).expect("Where did my file go?");
 
     part_one(&contents);
-    // part_two(&contents);
+    part_two(&contents);
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -95,5 +95,46 @@ fn part_one(contents: &String) {
 }
 
 fn part_two(contents: &String) {
-    println!("Part Two: {contents}");
+    let games_product: u32 = contents
+        .split("\n")
+        .map(|line| {
+            let game_contents = line.split(":").collect::<Vec<_>>();
+
+            let marble_game: Vec<_> = game_contents[1]
+                .split(";")
+                .map(|game| {
+                    game.trim()
+                        .split(",")
+                        .collect::<Vec<_>>()
+                        .iter()
+                        .map(|item| parse(item.trim()))
+                        .collect::<Vec<_>>()
+                })
+                .flatten()
+                .collect();
+
+            let red: u32 = marble_game
+                .iter()
+                .filter(|marble| marble.color == Color::Red)
+                .max_by_key(|marble| marble.amount)
+                .unwrap()
+                .amount;
+            let green: u32 = marble_game
+                .iter()
+                .filter(|marble| marble.color == Color::Green)
+                .max_by_key(|marble| marble.amount)
+                .unwrap()
+                .amount;
+            let blue: u32 = marble_game
+                .iter()
+                .filter(|marble| marble.color == Color::Blue)
+                .max_by_key(|marble| marble.amount)
+                .unwrap()
+                .amount;
+
+            red * green * blue
+        })
+        .sum();
+
+    println!("{}", games_product);
 }
