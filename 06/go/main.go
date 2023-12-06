@@ -98,7 +98,7 @@ func parseNums(input []string) []int {
 }
 
 func main() {
-	readFile, err := os.Open("../test-input")
+	readFile, err := os.Open("../input")
 
 	if err != nil {
 		fmt.Println(err)
@@ -116,21 +116,60 @@ func main() {
 	readFile.Close()
 
 	solvePartOne(fileLines)
-	// solvePartTwo(fileLines)
+	solvePartTwo(fileLines)
+}
+
+func advance(race_time int, button_time int) int {
+	movement_time := race_time - button_time
+
+	movement_distance := movement_time * button_time
+
+	return movement_distance
+}
+
+func find_start(time int, dist int) int {
+	for i := 0; i <= time; i++ {
+		if advance(time, i) > dist {
+			return i
+		}
+	}
+	return -1
+}
+
+func find_end(time int, dist int) int {
+	for i := time; i >= 0; i-- {
+		if advance(time, i) > dist {
+			return i
+		}
+	}
+	return -1
 }
 
 func solvePartOne(input []string) int {
-	for _, line := range input {
-		fmt.Println(line)
+	time_vals := parseNums(strings.Fields(strings.Split(input[0], ":")[1]))
+	distance_vals := parseNums(strings.Fields(strings.Split(input[1], ":")[1]))
+
+	total_mut := 1
+
+	for idx := range time_vals {
+		start := find_sstart(time_vals[idx], distance_vals[idx])
+		fin := find_end(time_vals[idx], distance_vals[idx])
+		total_mut *= fin + 1 - start
 	}
 
-	return 0
+	fmt.Println(total_mut)
+	return total_mut
 }
 
 func solvePartTwo(input []string) int {
-	for _, line := range input {
-		fmt.Println(line)
-	}
+	time_vals := strings.Join(strings.Fields(strings.Split(input[0], ":")[1]), "")
+	time_val, _ := strconv.Atoi(time_vals)
+	distance_vals := strings.Join(strings.Fields(strings.Split(input[1], ":")[1]), "")
+	distance_val, _ := strconv.Atoi(distance_vals)
 
-	return 0
+	start := find_start(time_val, distance_val)
+	fin := find_end(time_val, distance_val)
+
+	fmt.Println(fin + 1 - start)
+	return fin + 1 - start
 }
