@@ -152,7 +152,7 @@ func solvePartOne(input []string) int {
 	total_mut := 1
 
 	for idx := range time_vals {
-		start := find_sstart(time_vals[idx], distance_vals[idx])
+		start := find_start(time_vals[idx], distance_vals[idx])
 		fin := find_end(time_vals[idx], distance_vals[idx])
 		total_mut *= fin + 1 - start
 	}
