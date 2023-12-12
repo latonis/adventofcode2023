@@ -87,7 +87,7 @@ func Last(T []any) any {
 }
 
 func main() {
-	readFile, err := os.Open("../test-input")
+	readFile, err := os.Open("../input")
 
 	if err != nil {
 		fmt.Println(err)
@@ -105,39 +105,24 @@ func main() {
 	readFile.Close()
 
 	solvePartOne(fileLines)
-	// solvePartTwo(fileLines)
+	solvePartTwo(fileLines)
 }
 
 type Universe struct {
-	grid [][]Point
+	grid     [][]Point
+	galaxies []Point
 }
 
 type Point struct {
+	x      int
+	y      int
 	galaxy bool
-	x int
-	y int
 }
 
-
-func (universe *Universe) insert(index int, value []Point) {
-	if len(universe.grid) == index { // nil or empty slice or after last element
-		universe.grid = append(universe.grid, value)
-		return
-	}
-	universe.grid = append(universe.grid[:index+1], universe.grid[index:]...) // index < len(a)
-	universe.grid[index] = value
-}
-
-func insertPoint(a []Point, index int, value Point) []Point {
-	if len(a) == index { // nil or empty slice or after last element
-		return append(a, value)
-	}
-	a = append(a[:index+1], a[index:]...) // index < len(a)
-	a[index] = value
-	return a
-}
-
-func (universe *Universe) Expand(count int) {
+func (universe *Universe) Expand() [][]int {
+	indexes := make([][]int, 0)
+	indexes = append(indexes, []int{})
+	indexes = append(indexes, []int{})
 
 	for y := 0; y < len(universe.grid); y++ {
 		emptyLine := true
@@ -147,17 +132,12 @@ func (universe *Universe) Expand(count int) {
 			}
 		}
 		if emptyLine {
-			for i := 0; i < count; i++ {
-				universe.insert(y, universe.grid[y])
-				y += 1
-			}
+			indexes[1] = append(indexes[1], y)
 		}
 	}
 
 	x := 0
-	maxLen := len(universe.grid[0])
-
-	for x < maxLen {
+	for x < len(universe.grid[0]) {
 		emptyLine := true
 		for y := 0; y < len(universe.grid); y++ {
 			if universe.grid[y][x].galaxy {
@@ -166,16 +146,11 @@ func (universe *Universe) Expand(count int) {
 		}
 
 		if emptyLine {
-			for i := 0; i < count; i++ {
-				for y := 0; y < len(universe.grid); y++ {
-					universe.grid[y] = insertPoint(universe.grid[y], x, universe.grid[y][x])
-				}
-				x += 1
-				maxLen += 1
-			}
+			indexes[0] = append(indexes[0], x)
 		}
 		x += 1
 	}
+	return indexes
 }
 
 func Sum(a []int) int {
@@ -186,55 +161,36 @@ func Sum(a []int) int {
 	return sum
 }
 
-func (universe *Universe) PrintGrid() {
-	for _, line := range universe.grid {
-		for _, point := range line {
-			if point.galaxy {
-				fmt.Print("#")
-			} else {
-				fmt.Print(".")
-			}
-		}
-		fmt.Println()
-	}
-}
-
-func calcPath(cX int, cY int, sX int, sY int) int {
+func calcPath(cX int, cY int, sX int, sY int, indexes [][]int, factor int) int {
+	path := 0
 	if cX < sX {
-		return ((sX - cX) + (cY - sY))
+		cX, sX = sX, cX
 	}
-	return ((cX - sX) + (cY - sY))
-}
 
-func (universe Universe) traverse(xIndex int, yIndex int) int {
-	paths := make([]int, 0)
-
-	for y := yIndex; y < len(universe.grid); y++ {
-		if y == yIndex {
-			for x := xIndex + 1; x < len(universe.grid[y]); x++ {
-				if universe.grid[y][x].galaxy {
-					paths = append(paths, calcPath(x, y, xIndex, yIndex))
-				}
-			}
-		} else {
-			for x := 0; x < len(universe.grid[y]); x++ {
-				if universe.grid[y][x].galaxy {
-					paths = append(paths, calcPath(x, y, xIndex, yIndex))
-				}
-			}
+	for _, x := range indexes[0] {
+		if sX < x && x < cX {
+			path += 1 * factor
 		}
 	}
 
-	return Sum(paths)
+	for _, y := range indexes[1] {
+		if sY < y && y < cY {
+			path += 1 * factor
+		}
+	}
+
+	path += (cX - sX) + (cY - sY)
+
+	return path
 }
 
-func (universe Universe) FindPaths() int {
+func (universe Universe) FindPaths(indexes [][]int, factor int) int {
 	total := 0
-	for y, line := range universe.grid {
-		for x, Point := range line {
-			if Point.galaxy {
-				total += universe.traverse(x, y)
-			}
+	for idx := 0; idx < len(universe.galaxies)-1; idx++ {
+		g1 := universe.galaxies[idx]
+		for idx2 := idx + 1; idx2 < len(universe.galaxies); idx2++ {
+			g2 := universe.galaxies[idx2]
+			total += calcPath(g2.x, g2.y, g1.x, g1.y, indexes, factor-1)
 		}
 	}
 	return total
@@ -243,20 +199,21 @@ func (universe Universe) FindPaths() int {
 func solvePartOne(input []string) int {
 	grid := new(Universe)
 
-	for _, line := range input {
+	for y, line := range input {
 		gridX := make([]Point, 0)
-		for _, char := range line {
-			current := Point{galaxy: false}
+		for x, char := range line {
+			current := Point{x: x, y: y, galaxy: false}
 			if char == '#' {
 				current.galaxy = true
+				grid.galaxies = append(grid.galaxies, current)
 			}
 			gridX = append(gridX, current)
 		}
 		grid.grid = append(grid.grid, gridX)
 	}
 
-	grid.Expand(1)
-	total := grid.FindPaths()
+	indexes := grid.Expand()
+	total := grid.FindPaths(indexes, 2)
 	fmt.Println(total)
 	return total
 }
@@ -269,16 +226,17 @@ func solvePartTwo(input []string) int {
 		for x, char := range line {
 			current := Point{x: x, y: y, galaxy: false}
 			if char == '#' {
-
 				current.galaxy = true
+				grid.galaxies = append(grid.galaxies, current)
+
 			}
 			gridX = append(gridX, current)
 		}
 		grid.grid = append(grid.grid, gridX)
 	}
 
-	grid.Expand(999999)
-	total := grid.FindPaths()
+	indexes := grid.Expand()
+	total := grid.FindPaths(indexes, 1000000)
 	fmt.Println(total)
 	return total
 }
