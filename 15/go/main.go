@@ -116,7 +116,7 @@ func main() {
 	readFile.Close()
 
 	solvePartOne(fileLines)
-	// solvePartTwo(fileLines)
+	solvePartTwo(fileLines)
 }
 
 func HASH(input string) int {
@@ -143,10 +143,94 @@ func solvePartOne(input []string) int {
 	return total
 }
 
-func solvePartTwo(input []string) int {
-	for _, line := range input {
-		fmt.Println(line)
+type label struct {
+	id  string
+	val int
+}
+
+func InitMap(hashmap map[int][]label) {
+	MAPSIZE := 256
+	for i := 0; i < MAPSIZE; i++ {
+		hashmap[i] = make([]label, 0)
+	}
+}
+
+func UpdateLabel(newLabel label, hashmap map[int][]label) {
+	found := false
+	for idx, oldLabel := range hashmap[HASH(newLabel.id)] {
+		if oldLabel.id == newLabel.id {
+			found = true
+			hashmap[HASH(newLabel.id)][idx] = newLabel
+		}
 	}
 
-	return 0
+	if !found {
+		hashmap[HASH(newLabel.id)] = append(hashmap[HASH(newLabel.id)], newLabel)
+	}
+}
+
+func RemoveLabel(removeLabel label, hashmap map[int][]label) {
+	for idx, oldLabel := range hashmap[HASH(removeLabel.id)] {
+		if oldLabel.id == removeLabel.id {
+			hashmap[HASH(oldLabel.id)] = append(hashmap[HASH(oldLabel.id)][:idx], hashmap[HASH(oldLabel.id)][idx+1:]...)
+		}
+	}
+}
+
+func PrintMap(hashmap map[int][]label) {
+	for k, v := range hashmap {
+		if len(v) > 0 {
+			fmt.Println(k, v)
+		}
+	}
+}
+
+func StringToVec(input string) []string {
+
+	a := make([]string, 0)
+
+	for _, s := range input {
+		a = append(a, string(s))
+	}
+
+	return a
+}
+
+func solvePartTwo(input []string) int {
+	hashmap := make(map[int][]label)
+	total := 0
+	InitMap(hashmap)
+
+	for _, line := range input {
+		sequence := strings.Split(line, ",")
+		for _, s := range sequence {
+			s_vec := StringToVec(s)
+			op_idx := Index(s_vec, "=")
+
+			if op_idx == -1 {
+				op_idx = Index(s_vec, "-")
+			}
+
+			op := string(s[op_idx])
+			label_id := strings.Split(s, op)[0]
+			val, _ := strconv.Atoi(strings.Split(s, op)[1])
+
+			if op == "=" {
+				UpdateLabel(label{id: label_id, val: val}, hashmap)
+			} else if op == "-" {
+				RemoveLabel(label{id: label_id, val: val}, hashmap)
+			} else {
+				fmt.Println("Operation not supported: ", op)
+			}
+		}
+	}
+
+	for k, v := range hashmap {
+		for idx, label := range v {
+			total += (1 + k) * (idx + 1) * label.val
+		}
+	}
+
+	fmt.Println(total)
+	return total
 }
