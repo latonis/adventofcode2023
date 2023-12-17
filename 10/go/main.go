@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -120,49 +119,11 @@ func main() {
 	// solvePartTwo(fileLines)
 }
 
-func PrintGrid(grid [][]Point) {
-	for _, line := range grid {
-		for _, point := range line {
-			fmt.Print(point.c)
-		}
-		fmt.Println()
-	}
-}
-
-type Point struct {
-	x int
-	y int
-	c string
-}
-
-func (p *Point) distance(p2 *Point) int {
-	return int(math.Sqrt(float64(p2.x-p.x)*float64(p2.x-p.x) + float64(p2.y-p.y)*float64(p2.y-p.y)))
-}
-
-func (p *Point) grid(grid [][]Point) {
-	for _, line := range grid {
-		for _, point := range line {
-			fmt.Print(p.distance(&point))
-		}
-		fmt.Println()
-	}
-}
-
 func solvePartOne(input []string) int {
-	grid := make([][]Point, 0)
-	var start Point
-	for y, line := range input {
-		gridX := make([]Point, 0)
-		for x, char := range line {
-			if char == 'S' {
-				start = Point{x: x, y: y, c: string(char)}
-			}
-			gridX = append(gridX, Point{x: x, y: y, c: string(char)})
-		}
-		grid = append(grid, gridX)
+	for _, line := range input {
+		fmt.Println(line)
 	}
-	fmt.Println(start)
-	start.grid(grid)
+
 	return 0
 }
 
