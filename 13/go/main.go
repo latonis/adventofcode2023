@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -75,16 +74,6 @@ func Last(T []any) any {
 	return nil
 }
 
-func parseNums(input []string) []int {
-	a := make([]int, 0)
-
-	for item := range input {
-		parsed, _ := strconv.Atoi(input[item])
-		a = append(a, parsed)
-	}
-	return a
-}
-
 func main() {
 	readFile, err := os.Open("../input")
 
@@ -104,7 +93,7 @@ func main() {
 	readFile.Close()
 
 	solvePartOne(fileLines)
-	// solvePartTwo(fileLines)
+	solvePartTwo(fileLines)
 }
 
 type Point struct {
@@ -126,25 +115,27 @@ func (pattern *Pattern) PrintGrid() {
 	}
 }
 
-func CompareSlices(s1 []Point, s2 []Point) bool {
+func CompareSlices(s1 []Point, s2 []Point) int {
 	if len(s1) != len(s2) {
 		fmt.Println("Slices not the same length!")
-		return false
+		return -1
 	}
+
+	bad := 0
 
 	for x := range s1 {
 		if s1[x].c != s2[x].c {
-			return false
+			bad += 1
 		}
 	}
 
-	return true
+	return bad
 }
 
-func (pattern *Pattern) CheckVertical() int {
+func (pattern *Pattern) CheckVertical(part2 bool) int {
 	maxLen := len(pattern.grid[0])
 	for x := 0; x < maxLen-1; x++ {
-		bad := false
+		bad := 0
 		for x2 := 0; x2 < maxLen; x2++ {
 			start := x - x2
 			stop := x + x2 + 1
@@ -157,43 +148,50 @@ func (pattern *Pattern) CheckVertical() int {
 					s2 = append(s2, pattern.grid[y][stop])
 				}
 
-				if !CompareSlices(s1, s2) {
-					bad = true
-				}
+				bad += CompareSlices(s1, s2)
 			}
 		}
-		if !bad {
-			return x + 1
+		if part2 {
+			if bad == 1 {
+				return x + 1
+			}
+		} else {
+			if bad == 0 {
+				return x + 1
+			}
 		}
 	}
 	return -1
 }
 
-func (pattern *Pattern) CheckHorizontal() int {
+func (pattern *Pattern) CheckHorizontal(part2 bool) int {
 	maxLen := len(pattern.grid)
 	for y := 0; y < maxLen-1; y++ {
-		bad := false
+		bad := 0
 		for y2 := 0; y2 < maxLen; y2++ {
 			start := y - y2
 			stop := y + y2 + 1
 			if start >= 0 && start < stop && stop < maxLen {
-				if !CompareSlices(pattern.grid[start], pattern.grid[stop]) {
-					bad = true
-				}
+				bad += CompareSlices(pattern.grid[start], pattern.grid[stop])
 			}
 		}
-		if !bad {
-			return y + 1
+		if part2 {
+			if bad == 1 {
+				return y + 1
+			}
+		} else {
+			if bad == 0 {
+				return y + 1
+			}
 		}
 	}
 	return -1
 }
 
-func (pattern *Pattern) FindMirror() int {
+func (pattern *Pattern) FindMirror(part2 bool) int {
 	total := 0
-	pattern.PrintGrid()
-	vert := pattern.CheckVertical()
-	hori := pattern.CheckHorizontal()
+	vert := pattern.CheckVertical(part2)
+	hori := pattern.CheckHorizontal(part2)
 	if vert != -1 {
 		total += vert
 	} else if hori != -1 {
@@ -208,7 +206,7 @@ func solvePartOne(input []string) int {
 	pattern := new(Pattern)
 	for y, line := range input {
 		if len(line) == 0 {
-			total += pattern.FindMirror()
+			total += pattern.FindMirror(false)
 			pattern.grid = make([][]Point, 0)
 			continue
 		}
@@ -219,18 +217,34 @@ func solvePartOne(input []string) int {
 		pattern.grid = append(pattern.grid, gridX)
 
 		if y == len(input)-1 {
-			total += pattern.FindMirror()
+			total += pattern.FindMirror(false)
 		}
 	}
 
 	fmt.Println(total)
-	return 0
+	return total
 }
 
 func solvePartTwo(input []string) int {
-	for _, line := range input {
-		fmt.Println(line)
+	total := 0
+	pattern := new(Pattern)
+	for y, line := range input {
+		if len(line) == 0 {
+			total += pattern.FindMirror(true)
+			pattern.grid = make([][]Point, 0)
+			continue
+		}
+		gridX := make([]Point, 0)
+		for x, char := range line {
+			gridX = append(gridX, Point{x, y, string(char)})
+		}
+		pattern.grid = append(pattern.grid, gridX)
+
+		if y == len(input)-1 {
+			total += pattern.FindMirror(true)
+		}
 	}
 
-	return 0
+	fmt.Println(total)
+	return total
 }
